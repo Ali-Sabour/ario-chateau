@@ -1,186 +1,498 @@
-HTML
+```html
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ario Chateau Portal</title>
-    <link rel="apple-touch-icon" href="https://via.placeholder.com/512">
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-color: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-color: #38bdf8;
-            --border-color: #334155;
-            --danger-color: #ef4444;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 16px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-        h1 {
-            font-size: 1.5rem;
-            margin: 0;
-        }
-        .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        .btn {
-            background-color: var(--accent-color);
-            color: #0f172a;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            font-size: 1rem;
-        }
-        .btn:hover {
-            opacity: 0.9;
-        }
-        .btn-danger {
-            background-color: var(--danger-color);
-            color: #fff;
-        }
-        input, select {
-            width: 100%;
-            padding: 12px;
-            background: #0f172a;
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            border-radius: 8px;
-            margin-bottom: 16px;
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
-        label {
-            display: block;
-            margin-bottom: 6px;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-        /* PDF View Overlay Modal */
-        #pdf-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-color);
-            z-index: 9999;
-            overflow-y: auto;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        .pdf-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--card-bg);
-            padding: 15px 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border-color);
-        }
-        .pdf-body {
-            background: #ffffff;
-            color: #000000;
-            padding: 40px;
-            border-radius: 8px;
-            max-width: 700px;
-            margin: 0 auto;
-        }
-        @media print {
-            .no-print { display: none !important; }
-            #pdf-overlay { position: static; background: white; padding: 0; }
-            .pdf-body { padding: 0; }
-        }
-    </style>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- PWA & Native App Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Ario Chateau">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2921/2921222.png">
+  <title>Ario Chateau Portal</title>
 </head>
-<body>
-
-    <div class="container">
-        <header>
-            <h1>Ario Chateau Portal</h1>
-        </header>
-
-        <div class="card">
-            <h2>Dashboard</h2>
-            <p style="color: var(--text-muted);">Manage your property transactions and reports easily.</p>
-            <button class="btn" onclick="openPdfReport()">View PDF Report (Filtered Data)</button>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased">
+  <div class="max-w-md mx-auto p-4 sm:max-w-xl pb-12">
+    <header class="mb-4 mt-2 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-blue-400 shadow-sm">AC</div>
+        <div>
+          <h1 class="text-2xl font-bold text-white tracking-tight">Ario Chateau Portal</h1>
+          <p class="text-xs text-slate-400">GitHub Hosted & Live Sheet Sync</p>
         </div>
+      </div>
+      <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-950 text-emerald-400 border border-emerald-800">
+        Connected
+      </span>
+    </header>
 
-        <div class="card">
-            <h2>Add New Transaction</h2>
-            <label>Month</label>
-            <select id="tx-month">
-                <option value="January">January</option>
-                <option value="February">February</option>
-                <option value="March">March</option>
-            </select>
-
-            <label>Unit</label>
-            <select id="tx-unit">
-                <option value="Unit 1">Unit 1</option>
-                <option value="Unit 2">Unit 2</option>
-                <option value="Shared">Shared Unit</option>
-            </select>
-
-            <button class="btn" onclick="submitTransaction()">Submit Entry</button>
+    <!-- Dashboard Filters -->
+    <div class="bg-slate-900 p-4 rounded-2xl shadow-lg border border-slate-800 mb-4">
+      <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Dashboard Filters</h2>
+      <div class="grid grid-cols-2 gap-3 mb-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Filter Month</label>
+          <select id="filterMonth" onchange="applyFilters()" class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="ALL">All Months</option>
+          </select>
         </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Filter Unit</label>
+          <select id="filterUnit" onchange="applyFilters()" class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="ALL">All Units</option>
+          </select>
+        </div>
+      </div>
+      <button onclick="generatePDFReport()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium py-2 rounded-lg text-xs transition flex items-center justify-center gap-2">
+        <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        View PDF Report (Filtered Data)
+      </button>
     </div>
 
-    <!-- PDF Report Fullscreen Overlay with Close Button -->
-    <div id="pdf-overlay">
-        <div class="pdf-header no-print">
-            <h3 style="margin:0; color:var(--text-color);">PDF Report Preview</h3>
-            <button class="btn btn-danger" style="width: auto; padding: 8px 16px;" onclick="closePdfReport()">✕ Close / Back to App</button>
+    <!-- Tenant Directory Section -->
+    <div class="bg-slate-900 p-4 rounded-2xl shadow-lg border border-slate-800 mb-4">
+      <div class="flex justify-between items-center cursor-pointer" onclick="toggleTenantDirectory()">
+        <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Tenant Directory & Lease Entry</h2>
+        <button id="toggleDirBtn" class="text-xs text-blue-400 font-medium hover:underline">Show</button>
+      </div>
+      
+      <div id="tenantDirectoryContent" class="hidden mt-4 pt-4 border-t border-slate-800 space-y-4">
+        <form id="tenantForm" onsubmit="handleTenantSubmit(event)" class="space-y-3 bg-slate-800/50 p-3 rounded-xl border border-slate-700/50">
+          <p class="text-xs font-bold text-white mb-1">Add / Update Tenant Lease</p>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 uppercase mb-1">Unit</label>
+            <select id="tenantUnit" name="unit" required class="w-full p-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-100 outline-none"></select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 uppercase mb-1">Status</label>
+            <select name="status" id="tenantStatus" onchange="handleStatusChange()" class="w-full p-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-100 outline-none">
+              <option value="Occupied">Occupied</option>
+              <option value="Vacant">Vacant</option>
+            </select>
+          </div>
+          <div id="vacantFields" class="hidden">
+            <label class="block text-[11px] font-semibold text-slate-300 uppercase mb-1">Lease End Date</label>
+            <input type="date" name="endDateVacant" id="inputEndDateVacant" class="w-full p-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-100 outline-none">
+          </div>
+          <div id="occupiedFields" class="space-y-3">
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-300 uppercase mb-1">Renter Name</label>
+              <input type="text" name="tenant" id="inputTenant" placeholder="Full Name" required class="w-full p-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-100 outline-none">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-300 uppercase mb-1">Lease Start</label>
+                <input type="date" name="startDate" id="inputStartDate" required class="w-full p-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-100 outline-none">
+              </div>
+              <div>
+                <label class="block text-[11px] font-semibold text-slate-300 uppercase mb-1">Lease End</label>
+                <input type="date" name="endDate" id="inputEndDateOccupied" required class="w-full p-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-100 outline-none">
+              </div>
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-300 uppercase mb-1">Lease Amount ($)</label>
+              <input type="number" step="0.01" name="amount" id="inputAmount" placeholder="0.00" required class="w-full p-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-100 outline-none">
+            </div>
+          </div>
+          <button type="submit" id="tenantSubmitBtn" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-medium py-2 rounded-lg text-xs transition">Save Tenant Info</button>
+        </form>
+        <div id="rentRollContainer" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+          <p class="text-xs text-slate-400 text-center py-2">Loading directory...</p>
         </div>
-        <div class="pdf-body" id="pdf-content-print">
-            <h2>Ario Chateau - Financial Report</h2>
-            <p><strong>Generated on:</strong> <span id="report-date"></span></p>
-            <hr style="border: 0; border-top: 1px solid #ccc; margin: 20px 0;">
-            <p>This is your generated property management report preview. You can print or save this page as a PDF using your browser controls.</p>
-            <button class="btn no-print" style="margin-top: 20px;" onclick="window.print()">Print / Save PDF</button>
-        </div>
+      </div>
     </div>
 
-    <script>
-        function openPdfReport() {
-            document.getElementById('report-date').innerText = new Date().toLocaleDateString();
-            document.getElementById('pdf-overlay').style.display = 'block';
-        }
+    <!-- Metrics Cards -->
+    <div class="grid grid-cols-1 gap-3 mb-6 sm:grid-cols-3">
+      <div class="bg-slate-900 p-4 rounded-xl shadow-lg border border-slate-800">
+        <p class="text-xs font-medium text-slate-400 uppercase">Total Income</p>
+        <p id="inc" class="text-xl font-bold text-emerald-400 mt-1">$0.00</p>
+      </div>
+      <div class="bg-slate-900 p-4 rounded-xl shadow-lg border border-slate-800">
+        <p class="text-xs font-medium text-slate-400 uppercase">Total Expense</p>
+        <p id="exp" class="text-xl font-bold text-rose-400 mt-1">$0.00</p>
+      </div>
+      <div class="bg-slate-900 p-4 rounded-xl shadow-lg border border-slate-800">
+        <p class="text-xs font-medium text-slate-400 uppercase">Net Profit</p>
+        <p id="net" class="text-xl font-bold text-blue-400 mt-1">$0.00</p>
+      </div>
+    </div>
 
-        function closePdfReport() {
-            document.getElementById('pdf-overlay').style.display = 'none';
-        }
+    <!-- Data Entry Form -->
+    <div class="bg-slate-900 p-5 rounded-2xl shadow-lg border border-slate-800">
+      <h2 class="text-lg font-semibold mb-4 text-white">Add New Transaction</h2>
+      <form id="transForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Month</label>
+          <select id="month" name="month" required class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="">Select Month</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Unit</label>
+          <select id="unit" name="unit" required class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="">Select Unit</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Type</label>
+            <select name="type" class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+              <option value="Income">Income</option>
+              <option value="Expense">Expense</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Amount ($)</label>
+            <input type="number" step="0.01" name="amount" required placeholder="0.00" class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Category</label>
+          <select id="category" name="category" required class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+            <option value="">Select Category</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Notes</label>
+          <input type="text" name="notes" placeholder="Optional details" class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+        </div>
+        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2.5 rounded-lg text-sm transition shadow-lg shadow-blue-900/40">Submit Entry</button>
+      </form>
+    </div>
+  </div>
 
-        function submitTransaction() {
-            alert('Transaction submitted successfully!');
+  <script>
+    // PASTE YOUR ACTUAL GOOGLE APPS SCRIPT /exec URL INSIDE THE QUOTES BELOW:
+    const API_URL = "https://script.google.com/macros/s/AKfycbzMjlqIOQcYY5n7MnoRpdB_9FLS6LE1I_RwY3gUEO3FkGZ68Hg4V6BIJzTir0PzRuJF/exec";
+
+    var globalData = {};
+    var currentFilteredTransactions = [];
+
+    window.onload = function() {
+      if (API_URL.includes("https://script.google.com/macros/s/AKfycbzMjlqIOQcYY5n7MnoRpdB_9FLS6LE1I_RwY3gUEO3FkGZ68Hg4V6BIJzTir0PzRuJF/exec")) {
+        console.warn("API_URL not configured. Loading preview mock data.");
+        initApp({
+          units: ["Unit 5202", "Unit 5203", "Shared Units"],
+          months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+          categories: ["Rent", "Management Fee", "Maintenance", "Insurance", "Utilities"],
+          transactions: [
+            {month: "january", unit: "unit 5202", type: "Income", category: "Rent", amount: 1500, notes: "Preview transaction"}
+          ],
+          rentRollDetails: [
+            {unit: "Unit 5202", tenant: "John Doe", status: "Occupied", startDate: "2026-01-01", endDate: "2026-12-31", amount: 1500}
+          ]
+        });
+        return;
+      }
+
+      fetch(API_URL + "?action=getData")
+        .then(res => res.json())
+        .then(data => initApp(data))
+        .catch(err => {
+          console.error(err);
+          alert("Failed to load data from sheet. Check your API_URL configuration.");
+        });
+    };
+
+    function initApp(data) {
+      globalData = data;
+      
+      var unitSelect = document.getElementById('unit');
+      var filterUnit = document.getElementById('filterUnit');
+      var tenantUnit = document.getElementById('tenantUnit');
+      unitSelect.innerHTML = '<option value="">Select Unit</option>';
+      filterUnit.innerHTML = '<option value="ALL">All Units</option>';
+      tenantUnit.innerHTML = '<option value="">Select Unit</option>';
+
+      data.units.forEach(function(u) {
+        unitSelect.appendChild(new Option(u, u));
+        filterUnit.appendChild(new Option(u, u));
+        tenantUnit.appendChild(new Option(u, u));
+      });
+
+      var monthSelect = document.getElementById('month');
+      var filterMonth = document.getElementById('filterMonth');
+      monthSelect.innerHTML = '<option value="">Select Month</option>';
+      filterMonth.innerHTML = '<option value="ALL">All Months</option>';
+      data.months.forEach(function(m) {
+        monthSelect.appendChild(new Option(m, m));
+        filterMonth.appendChild(new Option(m, m));
+      });
+
+      var catSelect = document.getElementById('category');
+      catSelect.innerHTML = '<option value="">Select Category</option>';
+      data.categories.forEach(function(c) {
+        catSelect.appendChild(new Option(c, c));
+      });
+
+      renderRentRoll(data.rentRollDetails || []);
+      applyFilters();
+    }
+
+    function handleStatusChange() {
+      var status = document.getElementById('tenantStatus').value;
+      var occupiedFields = document.getElementById('occupiedFields');
+      var vacantFields = document.getElementById('vacantFields');
+      
+      var tenantInput = document.getElementById('inputTenant');
+      var startDateInput = document.getElementById('inputStartDate');
+      var endDateOccupied = document.getElementById('inputEndDateOccupied');
+      var endDateVacant = document.getElementById('inputEndDateVacant');
+      var amountInput = document.getElementById('inputAmount');
+
+      if (status === 'Vacant') {
+        occupiedFields.classList.add('hidden');
+        vacantFields.classList.remove('hidden');
+        tenantInput.required = false;
+        startDateInput.required = false;
+        endDateOccupied.required = false;
+        amountInput.required = false;
+        endDateVacant.required = true;
+        tenantInput.value = '';
+        startDateInput.value = '';
+        amountInput.value = '0';
+      } else {
+        occupiedFields.classList.remove('hidden');
+        vacantFields.classList.add('hidden');
+        tenantInput.required = true;
+        startDateInput.required = true;
+        endDateOccupied.required = true;
+        amountInput.required = true;
+        endDateVacant.required = false;
+        endDateVacant.value = '';
+      }
+    }
+
+    function toggleTenantDirectory() {
+      var content = document.getElementById('tenantDirectoryContent');
+      var btn = document.getElementById('toggleDirBtn');
+      if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        btn.innerText = 'Hide';
+      } else {
+        content.classList.add('hidden');
+        btn.innerText = 'Show';
+      }
+    }
+
+    function renderRentRoll(rentRollList) {
+      var container = document.getElementById('rentRollContainer');
+      container.innerHTML = '';
+      if (!rentRollList || rentRollList.length === 0) {
+        container.innerHTML = '<p class="text-xs text-slate-400 text-center py-2">No rent roll data found.</p>';
+        return;
+      }
+      rentRollList.forEach(function(item) {
+        var isVacant = item.status.toLowerCase().includes('vacant');
+        var badgeColor = isVacant ? 'bg-rose-950 text-rose-400 border-rose-800' : 'bg-emerald-950 text-emerald-400 border-emerald-800';
+        var card = document.createElement('div');
+        card.className = 'bg-slate-800/80 p-3 rounded-xl border border-slate-700/60 text-xs space-y-1.5';
+        card.innerHTML = `
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-white text-sm">${item.unit}</span>
+            <span class="px-2 py-0.5 rounded-full font-medium border ${badgeColor}">${item.status}</span>
+          </div>
+          <div class="flex justify-between text-slate-300">
+            <span>Tenant: <b class="text-white">${item.tenant}</b></span>
+            <span class="font-semibold text-emerald-400">$${Number(item.amount).toLocaleString('en-US', {minimumFractionDigits: 2})} /mo</span>
+          </div>
+          <div class="text-[11px] text-slate-400 flex justify-between pt-1 border-t border-slate-700/40">
+            <span>Lease: ${item.startDate || 'N/A'} &rarr; ${item.endDate || 'N/A'}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function applyFilters() {
+      var selectedMonth = document.getElementById('filterMonth').value.trim().toLowerCase();
+      var selectedUnit = document.getElementById('filterUnit').value.trim().toLowerCase();
+
+      var totalIncome = 0;
+      var totalExpense = 0;
+      currentFilteredTransactions = [];
+
+      globalData.transactions.forEach(function(t) {
+        var matchMonth = (selectedMonth === 'all' || t.month === selectedMonth);
+        var matchUnit = (selectedUnit === 'all' || t.unit === selectedUnit);
+
+        if (matchMonth && matchUnit) {
+          currentFilteredTransactions.push(t);
+          if (t.type.toLowerCase() === 'income') {
+            totalIncome += t.amount;
+          } else if (t.type.toLowerCase() === 'expense') {
+            totalExpense += t.amount;
+          }
         }
-    </script>
+      });
+
+      var netProfit = totalIncome - totalExpense;
+      document.getElementById('inc').innerText = '$' + totalIncome.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      document.getElementById('exp').innerText = '$' + totalExpense.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      var netElement = document.getElementById('net');
+      netElement.innerText = '$' + netProfit.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      netElement.className = netProfit >= 0 ? 'text-xl font-bold text-blue-400 mt-1' : 'text-xl font-bold text-rose-400 mt-1';
+    }
+
+    function generatePDFReport() {
+      var selectedMonth = document.getElementById('filterMonth').value;
+      var selectedUnit = document.getElementById('filterUnit').value;
+
+      var totalInc = document.getElementById('inc').innerText;
+      var totalExp = document.getElementById('exp').innerText;
+      var netProf = document.getElementById('net').innerText;
+
+      var win = window.open('', '_blank');
+      var html = `
+        <html>
+        <head>
+          <title>Ario Chateau Financial Report</title>
+          <style>
+            body { font-family: Helvetica, Arial, sans-serif; color: #111; padding: 30px; }
+            h1 { color: #1e3a8a; margin-bottom: 5px; }
+            .subtitle { color: #666; font-size: 14px; margin-bottom: 25px; }
+            .cards { display: flex; gap: 15px; margin-bottom: 30px; }
+            .card { border: 1px solid #ddd; padding: 15px; border-radius: 6px; flex: 1; background: #f9fafb; }
+            .card h3 { margin: 0 0 5px 0; font-size: 12px; color: #555; text-transform: uppercase; }
+            .card p { margin: 0; font-size: 18px; font-weight: bold; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
+            th, td { border: 1px solid #e5e7eb; padding: 10px; text-align: left; }
+            th { background-color: #f3f4f6; color: #374151; }
+            .text-right { text-align: right; }
+            .no-print { margin-bottom: 20px; }
+            .close-btn { background: #ef4444; color: white; border: none; padding: 10px 20px; font-size: 14px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+            .close-btn:hover { background: #dc2626; }
+            @media print { .no-print { display: none; } }
+          </style>
+        </head>
+        <body>
+          <div class="no-print">
+            <button class="close-btn" onclick="window.close()">&#8592; Close & Back to App</button>
+          </div>
+          <h1>Ario Chateau Financial Report</h1>
+          <div class="subtitle">Filtered by Month: <b>${selectedMonth}</b> | Unit: <b>${selectedUnit}</b></div>
+          
+          <div class="cards">
+            <div class="card"><h3>Total Income</h3><p style="color: #059669;">${totalInc}</p></div>
+            <div class="card"><h3>Total Expense</h3><p style="color: #dc2626;">${totalExp}</p></div>
+            <div class="card"><h3>Net Profit</h3><p style="color: #2563eb;">${netProf}</p></div>
+          </div>
+
+          <h3>Transaction Breakdown</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Unit</th>
+                <th>Type</th>
+                <th>Category</th>
+                <th class="text-right">Amount</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      if (currentFilteredTransactions.length === 0) {
+        html += `<tr><td colspan="6" style="text-align:center; color:#777;">No transactions found for this filter selection.</td></tr>`;
+      } else {
+        currentFilteredTransactions.forEach(function(t) {
+          html += `
+            <tr>
+              <td style="text-transform: capitalize;">${t.month}</td>
+              <td>${t.unit}</td>
+              <td>${t.type}</td>
+              <td>${t.category}</td>
+              <td class="text-right">$${t.amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+              <td>${t.notes}</td>
+            </tr>
+          `;
+        });
+      }
+
+      html += `
+            </tbody>
+          </table>
+          <script>
+            window.onload = function() { window.print(); }
+          <\/script>
+        </body>
+        </html>
+      `;
+
+      win.document.write(html);
+      win.document.close();
+    }
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      var btn = document.getElementById('submitBtn');
+      btn.innerText = "Saving...";
+      btn.disabled = true;
+
+      var formData = {
+        action: "addTransaction",
+        month: document.getElementById('transForm').month.value,
+        unit: document.getElementById('transForm').unit.value,
+        type: document.getElementById('transForm').type.value,
+        amount: document.getElementById('transForm').amount.value,
+        category: document.getElementById('transForm').category.value,
+        notes: document.getElementById('transForm').notes.value
+      };
+
+      fetch(API_URL, { method: "POST", body: JSON.stringify(formData) })
+        .then(res => res.json())
+        .then(res => {
+          alert("Transaction added successfully!");
+          document.getElementById('transForm').reset();
+          btn.innerText = "Submit Entry";
+          btn.disabled = false;
+          window.onload();
+        })
+        .catch(err => {
+          alert("Error saving transaction.");
+          btn.innerText = "Submit Entry";
+          btn.disabled = false;
+        });
+    }
+
+    function handleTenantSubmit(e) {
+      e.preventDefault();
+      var btn = document.getElementById('tenantSubmitBtn');
+      btn.innerText = "Saving..."
+      btn.disabled = true;
+
+      var status = document.getElementById('tenantStatus').value;
+      var endDateVal = status === 'Vacant' ? document.getElementById('inputEndDateVacant').value : document.getElementById('inputEndDateOccupied').value;
+
+      var formData = {
+        action: "addTenant",
+        unit: document.getElementById('tenantForm').unit.value,
+        tenant: status === 'Vacant' ? 'Vacant' : document.getElementById('tenantForm').tenant.value,
+        status: status,
+        startDate: status === 'Vacant' ? '' : document.getElementById('tenantForm').startDate.value,
+        endDate: endDateVal,
+        amount: status === 'Vacant' ? 0 : document.getElementById('tenantForm').amount.value
+      };
+
+      fetch(API_URL, { method: "POST", body: JSON.stringify(formData) })
+        .then(res => res.json())
+        .then(res => {
+          alert("Tenant saved successfully!");
+          document.getElementById('tenantForm').reset();
+          btn.innerText = "Save Tenant Info";
+          btn.disabled = false;
+          window.onload();
+        })
+        .catch(err => {
+          alert("Error saving tenant.");
+          btn.innerText = "Save Tenant Info";
+          btn.disabled = false;
+        });
+    }
+  </script>
 </body>
 </html>
+```
