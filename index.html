@@ -8,7 +8,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Ario Chateau">
-  <link rel="apple-touch-icon" href="https://drive.google.com/file/d/1gpfssgiB7cFOOTBvgfilyyqG1_9RcIG_/view?usp=sharing">
+  <!-- Replace the URL below with your custom picture/logo URL -->
+  <link rel="apple-touch-icon" href="https://your-image-url-here.com/logo.png">
   <title>Ario Chateau Portal</title>
 </head>
 <body class="bg-slate-950 text-slate-100 font-sans antialiased">
@@ -164,7 +165,7 @@
 
   <script>
     // REPLACE WITH YOUR LIVE GOOGLE APPS SCRIPT EXEC URL (Leave placeholder if testing in preview)
-    const API_URL = "https://script.google.com/macros/s/AKfycbzMjlqIOQcYY5n7MnoRpdB_9FLS6LE1I_RwY3gUEO3FkGZ68Hg4V6BIJzTir0PzRuJF/exec";
+    const API_URL = "YOUR_APPS_SCRIPT_EXEC_URL_HERE";
 
     var globalData = {};
     var currentFilteredTransactions = [];
@@ -339,6 +340,7 @@
     function generatePDFReport() {
       var selectedMonth = document.getElementById('filterMonth').value;
       var selectedUnit = document.getElementById('filterUnit').value;
+
       var totalInc = document.getElementById('inc').innerText;
       var totalExp = document.getElementById('exp').innerText;
       var netProf = document.getElementById('net').innerText;
@@ -360,33 +362,67 @@
             th, td { border: 1px solid #e5e7eb; padding: 10px; text-align: left; }
             th { background-color: #f3f4f6; color: #374151; }
             .text-right { text-align: right; }
+            .no-print { margin-bottom: 20px; }
+            .close-btn { background: #ef4444; color: white; border: none; padding: 10px 20px; font-size: 14px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+            .close-btn:hover { background: #dc2626; }
+            @media print { .no-print { display: none; } }
           </style>
         </head>
         <body>
+          <div class="no-print">
+            <button class="close-btn" onclick="window.close()">&#8592; Close & Back to App</button>
+          </div>
           <h1>Ario Chateau Financial Report</h1>
           <div class="subtitle">Filtered by Month: <b>${selectedMonth}</b> | Unit: <b>${selectedUnit}</b></div>
+          
           <div class="cards">
             <div class="card"><h3>Total Income</h3><p style="color: #059669;">${totalInc}</p></div>
             <div class="card"><h3>Total Expense</h3><p style="color: #dc2626;">${totalExp}</p></div>
             <div class="card"><h3>Net Profit</h3><p style="color: #2563eb;">${netProf}</p></div>
           </div>
+
           <h3>Transaction Breakdown</h3>
           <table>
             <thead>
               <tr>
-                <th>Month</th><th>Unit</th><th>Type</th><th>Category</th><th class="text-right">Amount</th><th>Notes</th>
+                <th>Month</th>
+                <th>Unit</th>
+                <th>Type</th>
+                <th>Category</th>
+                <th class="text-right">Amount</th>
+                <th>Notes</th>
               </tr>
             </thead>
             <tbody>
       `;
+
       if (currentFilteredTransactions.length === 0) {
         html += `<tr><td colspan="6" style="text-align:center; color:#777;">No transactions found for this filter selection.</td></tr>`;
       } else {
         currentFilteredTransactions.forEach(function(t) {
-          html += `<tr><td style="text-transform: capitalize;">${t.month}</td><td>${t.unit}</td><td>${t.type}</td><td>${t.category}</td><td class="text-right">$${t.amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td><td>${t.notes}</td></tr>`;
+          html += `
+            <tr>
+              <td style="text-transform: capitalize;">${t.month}</td>
+              <td>${t.unit}</td>
+              <td>${t.type}</td>
+              <td>${t.category}</td>
+              <td class="text-right">$${t.amount.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+              <td>${t.notes}</td>
+            </tr>
+          `;
         });
       }
-      html += `</tbody></table><script>window.onload = function() { window.print(); }<\/script></body></html>`;
+
+      html += `
+            </tbody>
+          </table>
+          <script>
+            window.onload = function() { window.print(); }
+          <\/script>
+        </body>
+        </html>
+      `;
+
       win.document.write(html);
       win.document.close();
     }
