@@ -272,15 +272,35 @@
         container.innerHTML = '<p class="text-xs text-slate-400 text-center py-2">No rent roll data found.</p>';
         return;
       }
+      
+      var today = new Date();
+
       rentRollList.forEach(function(item) {
         var isVacant = item.status.toLowerCase().includes('vacant');
-        var badgeColor = isVacant ? 'bg-rose-950 text-rose-400 border-rose-800' : 'bg-emerald-950 text-emerald-400 border-emerald-800';
+        var badgeColor = 'bg-emerald-950 text-emerald-400 border-emerald-800';
+        var badgeText = item.status;
+
+        if (isVacant) {
+          badgeColor = 'bg-rose-950 text-rose-400 border-rose-800';
+        } else if (item.endDate) {
+          var endDate = new Date(item.endDate);
+          if (!isNaN(endDate)) {
+            var diffTime = endDate - today;
+            var diffDays = diffTime / (1000 * 60 * 60 * 24);
+            // 3 months or less remaining (approx 90 days)
+            if (diffDays <= 90) {
+              badgeColor = 'bg-amber-950 text-amber-400 border-amber-800';
+              badgeText = 'Expiring Soon';
+            }
+          }
+        }
+
         var card = document.createElement('div');
         card.className = 'bg-slate-800/80 p-3 rounded-xl border border-slate-700/60 text-xs space-y-1.5';
         card.innerHTML = `
           <div class="flex justify-between items-center">
             <span class="font-bold text-white text-sm">${item.unit}</span>
-            <span class="px-2 py-0.5 rounded-full font-medium border ${badgeColor}">${item.status}</span>
+            <span class="px-2 py-0.5 rounded-full font-medium border ${badgeColor}">${badgeText}</span>
           </div>
           <div class="flex justify-between text-slate-300">
             <span>Tenant: <b class="text-white">${item.tenant}</b></span>
