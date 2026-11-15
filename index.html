@@ -163,13 +163,12 @@
   </div>
 
   <script>
-    // Live Google Apps Script URL pre-configured
     const API_URL = "https://script.google.com/macros/s/AKfycbzMjlqIOQcYY5n7MnoRpdB_9FLS6LE1I_RwY3gUEO3FkGZ68Hg4V6BIJzTir0PzRuJF/exec";
 
     var globalData = {};
     var currentFilteredTransactions = [];
 
-    window.onload = function() {
+    function loadData() {
       fetch(API_URL + "?action=getData")
         .then(res => res.json())
         .then(data => initApp(data))
@@ -177,6 +176,10 @@
           console.error(err);
           alert("Failed to load data from sheet. Check your network connection.");
         });
+    }
+
+    window.onload = function() {
+      loadData();
     };
 
     function initApp(data) {
@@ -432,7 +435,7 @@
           document.getElementById('transForm').reset();
           btn.innerText = "Submit Entry";
           btn.disabled = false;
-          window.onload();
+          loadData();
         })
         .catch(err => {
           alert("Error saving transaction.");
@@ -467,7 +470,7 @@
           document.getElementById('tenantForm').reset();
           btn.innerText = "Save Tenant Info";
           btn.disabled = false;
-          window.onload();
+          loadData();
         })
         .catch(err => {
           alert("Error saving tenant.");
