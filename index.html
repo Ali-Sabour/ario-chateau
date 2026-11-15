@@ -120,10 +120,15 @@
       </div>
     </div>
 
-    <!-- Data Entry Form -->
-    <div class="bg-slate-900 p-5 rounded-2xl shadow-lg border border-slate-800">
-      <h2 class="text-lg font-semibold mb-4 text-white">Add New Transaction</h2>
+    <!-- Data Entry / Edit Form -->
+    <div class="bg-slate-900 p-5 rounded-2xl shadow-lg border border-slate-800 mb-4">
+      <div class="flex justify-between items-center mb-4">
+        <h2 id="formTitle" class="text-lg font-semibold text-white">Add New Transaction</h2>
+        <button id="cancelEditBtn" onclick="cancelEdit()" class="hidden text-xs text-rose-400 hover:underline">Cancel Edit</button>
+      </div>
+      
       <form id="transForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
+        <input type="hidden" id="editRowIndex" value="">
         <div>
           <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Month</label>
           <select id="month" name="month" required class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
@@ -139,14 +144,14 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Type</label>
-            <select name="type" class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+            <select id="type" name="type" class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
               <option value="Income">Income</option>
               <option value="Expense">Expense</option>
             </select>
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Amount ($)</label>
-            <input type="number" step="0.01" name="amount" required placeholder="0.00" class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+            <input type="number" step="0.01" id="amount" name="amount" required placeholder="0.00" class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
           </div>
         </div>
         <div>
@@ -157,10 +162,21 @@
         </div>
         <div>
           <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Notes</label>
-          <input type="text" name="notes" placeholder="Optional details" class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
+          <input type="text" id="notes" name="notes" placeholder="Optional details" class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none">
         </div>
         <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-medium py-2.5 rounded-lg text-sm transition shadow-lg shadow-blue-900/40">Submit Entry</button>
       </form>
+    </div>
+
+    <!-- Transaction History & Edit Section -->
+    <div class="bg-slate-900 p-4 rounded-2xl shadow-lg border border-slate-800">
+      <div class="flex justify-between items-center cursor-pointer" onclick="toggleHistoryList()">
+        <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Manage / Edit Recent Transactions</h2>
+        <button id="toggleHistoryBtn" class="text-xs text-blue-400 font-medium hover:underline">Show</button>
+      </div>
+      <div id="historyContent" class="hidden mt-4 pt-4 border-t border-slate-800 space-y-2 max-h-60 overflow-y-auto pr-1">
+        <p class="text-xs text-slate-400 text-center py-2">No transactions loaded.</p>
+      </div>
     </div>
   </div>
 
@@ -216,7 +232,68 @@
       });
 
       renderRentRoll(data.rentRollDetails || []);
+      renderHistoryList(data.transactions || []);
       applyFilters();
+    }
+
+    function toggleHistoryList() {
+      var content = document.getElementById('historyContent');
+      var btn = document.getElementById('toggleHistoryBtn');
+      if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        btn.innerText = 'Hide';
+      } else {
+        content.classList.add('hidden');
+        btn.innerText = 'Show';
+      }
+    }
+
+    function renderHistoryList(txList) {
+      var container = document.getElementById('historyContent');
+      container.innerHTML = '';
+      if (!txList || txList.length === 0) {
+        container.innerHTML = '<p class="text-xs text-slate-400 text-center py-2">No transactions recorded yet.</p>';
+        return;
+      }
+
+      // Show latest first
+      var reversed = [...txList].reverse();
+      reversed.forEach(function(t) {
+        var card = document.createElement('div');
+        card.className = 'bg-slate-800/80 p-2.5 rounded-xl border border-slate-700/60 text-xs flex justify-between items-center';
+        card.innerHTML = `
+          <div>
+            <div class="font-bold text-white capitalize">${t.month} - ${t.unit} (${t.category})</div>
+            <div class="text-[11px] text-slate-400">${t.type}: <span class="text-emerald-400 font-semibold">$${t.amount.toFixed(2)}</span> ${t.notes ? ' | ' + t.notes : ''}</div>
+          </div>
+          <button onclick='startEdit(${JSON.stringify(t)})' class="bg-blue-600 hover:bg-blue-500 text-white px-2.5 py-1 rounded-lg text-[11px] font-medium transition">Edit</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function startEdit(t) {
+      document.getElementById('editRowIndex').value = t.rowIndex;
+      document.getElementById('month').value = t.month.charAt(0).toUpperCase() + t.month.slice(1);
+      document.getElementById('unit').value = t.unit.charAt(0).toUpperCase() + t.unit.slice(1);
+      document.getElementById('type').value = t.type;
+      document.getElementById('amount').value = t.amount;
+      document.getElementById('category').value = t.category;
+      document.getElementById('notes').value = t.notes || '';
+
+      document.getElementById('formTitle').innerText = "Edit Transaction (Row " + t.rowIndex + ")";
+      document.getElementById('submitBtn').innerText = "Update Entry";
+      document.getElementById('cancelEditBtn').classList.remove('hidden');
+
+      window.scrollTo({ top: 400, behavior: 'smooth' });
+    }
+
+    function cancelEdit() {
+      document.getElementById('transForm').reset();
+      document.getElementById('editRowIndex').value = "";
+      document.getElementById('formTitle').innerText = "Add New Transaction";
+      document.getElementById('submitBtn').innerText = "Submit Entry";
+      document.getElementById('cancelEditBtn').classList.add('hidden');
     }
 
     function handleStatusChange() {
@@ -287,7 +364,6 @@
           if (!isNaN(endDate)) {
             var diffTime = endDate - today;
             var diffDays = diffTime / (1000 * 60 * 60 * 24);
-            // 3 months or less remaining (approx 90 days)
             if (diffDays <= 90) {
               badgeColor = 'bg-amber-950 text-amber-400 border-amber-800';
               badgeText = 'Expiring Soon';
@@ -436,32 +512,33 @@
 
     function handleFormSubmit(e) {
       e.preventDefault();
+      var rowIndex = document.getElementById('editRowIndex').value;
+      var isEditing = rowIndex !== "";
       var btn = document.getElementById('submitBtn');
-      btn.innerText = "Saving...";
+      btn.innerText = isEditing ? "Updating..." : "Saving...";
       btn.disabled = true;
 
       var formData = {
-        action: "addTransaction",
-        month: document.getElementById('transForm').month.value,
-        unit: document.getElementById('transForm').unit.value,
-        type: document.getElementById('transForm').type.value,
-        amount: document.getElementById('transForm').amount.value,
-        category: document.getElementById('transForm').category.value,
-        notes: document.getElementById('transForm').notes.value
+        action: isEditing ? "editTransaction" : "addTransaction",
+        rowIndex: rowIndex,
+        month: document.getElementById('month').value,
+        unit: document.getElementById('unit').value,
+        type: document.getElementById('type').value,
+        amount: document.getElementById('amount').value,
+        category: document.getElementById('category').value,
+        notes: document.getElementById('notes').value
       };
 
       fetch(API_URL, { method: "POST", body: JSON.stringify(formData) })
         .then(res => res.json())
         .then(res => {
-          alert("Transaction added successfully!");
-          document.getElementById('transForm').reset();
-          btn.innerText = "Submit Entry";
-          btn.disabled = false;
+          alert(isEditing ? "Transaction updated successfully!" : "Transaction added successfully!");
+          cancelEdit();
           loadData();
         })
         .catch(err => {
           alert("Error saving transaction.");
-          btn.innerText = "Submit Entry";
+          btn.innerText = isEditing ? "Update Entry" : "Submit Entry";
           btn.disabled = false;
         });
     }
